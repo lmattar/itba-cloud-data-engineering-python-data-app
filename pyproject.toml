@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "tp2"
+version = "0.1.0"
+description = "TP2"
+authors = ["Lucas Mattar"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+SQLAlchemy = "^1.4.26"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
