@@ -265,6 +265,18 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-
+  dbstock:
+   container_name: pg_container
+   image: postgres
+   restart: always
+   environment:
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: postgres
+   ports:
+     - "5433:5432"
+   volumes:
+      - pg_data127:/var/lib/postgresql/data/
+      - ./dbinit:/docker-entrypoint-initdb.d/
 volumes:
   postgres-db-volume:
+  pg_data127:
