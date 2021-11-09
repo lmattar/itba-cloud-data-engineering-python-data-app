@@ -8,6 +8,7 @@ authors = ["Lucas Mattar"]
 python = "^3.9"
 SQLAlchemy = "^1.4.26"
 pandas = "^1.3.4"
+requests = "^2.26.0"
 
 [tool.poetry.dev-dependencies]
 
