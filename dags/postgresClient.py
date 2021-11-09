@@ -1,11 +1,12 @@
 import pandas as pd
 from sqlalchemy import create_engine
 
-#engine = create_engine('postgresql://postgres:postgres@localhost:5433/stockdb')
+# engine = create_engine('postgresql://postgres:postgres@localhost:5433/stockdb')
+
 
 class PostgresClient:
-    def __init__(self,db,user,password,host,port):
-        self.dialect = 'postgresql'
+    def __init__(self, db, user, password, host, port):
+        self.dialect = "postgresql"
         self.db = db
         self.user = user
         self.password = password
@@ -14,7 +15,7 @@ class PostgresClient:
         self._engine = None
 
     def _get_engine(self):
-        db_uri = f'{self.dialect}://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}'
+        db_uri = f"{self.dialect}://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}"
         if not self._engine:
             self._engine = create_engine(db_uri)
         return self._engine
@@ -24,7 +25,7 @@ class PostgresClient:
 
     @staticmethod
     def _cursor_columns(cursor):
-        if hasattr(cursor, 'keys'):
+        if hasattr(cursor, "keys"):
             return cursor.keys()
         else:
             return [c[0] for c in cursor.description]
@@ -34,7 +35,7 @@ class PostgresClient:
             connection = self._connect()
         return connection.execute(sql)
 
-    def insert_from_frame(self, df, table, if_exists='append', index=False, **kwargs):
+    def insert_from_frame(self, df, table, if_exists="append", index=False, **kwargs):
         connection = self._connect()
         with connection:
             df.to_sql(table, connection, if_exists=if_exists, index=index, **kwargs)
@@ -51,7 +52,7 @@ class PostgresClient:
         return df
 
 
-if __name__ == '__main__':
-    db = 'stockdb'
-    sqlite_cli = PostgresClient(db,'postgres','postgres','localhost','5433')
-    print(sqlite_cli.to_frame('SELECT * FROM stock'))
+if __name__ == "__main__":
+    db = "stockdb"
+    sqlite_cli = PostgresClient(db, "postgres", "postgres", "localhost", "5433")
+    print(sqlite_cli.to_frame("SELECT * FROM stock"))
