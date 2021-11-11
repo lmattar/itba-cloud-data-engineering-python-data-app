@@ -1,8 +1,13 @@
 """Dummy DAG."""
+import matplotlib
+matplotlib.use('Agg')
+
+import os
 from datetime import datetime, timedelta
 import json
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import requests
 import sqlalchemy
 from postgresClient import PostgresClient
@@ -52,7 +57,7 @@ def get_stock_data(stock_symbol, **context):
     data = {
         "date": ["07/11/2021"],
         "symbol": [stock_symbol],
-        "low": ["10"],
+        "low": [10],
         "high": ["30"],
     }
     df = pd.DataFrame(data)
@@ -90,6 +95,21 @@ def _insert_stock_in_database(**context):
         print("Data already exists! Nothing to do...")
 
 
+def get_stock_report(**context):
+    pc = PostgresClient(DB_NAME, POSTGRES_USER, POSTGRES_PASS, DB_HOST, DB_PORT)
+    df = pc.to_frame("SELECT * FROM STOCK")
+    print("DataFrame a Plotear",df)   
+   # df.plot()
+    #plt.show()
+    matplotlib.pyplot.ioff()
+    df["low"] = pd.to_numeric(df["low"])
+    ax = df.hist(column=['low'])  # s is an instance of Series
+    fig = ax[0][0].get_figure()
+    fig.savefig('dags/figure.pdf')
+    
+    print(os.getcwd())
+     
+
 default_args = {"owner": "lmattar", "retries": 0}
 with DAG(
     "stock_dag",
@@ -117,6 +137,12 @@ with DAG(
         task_id="_insert_stock_in_database",
         python_callable=_insert_stock_in_database,
     )
+
+    t_report = PythonOperator(
+        task_id="get_stock_report",
+        python_callable=get_stock_report,
+    )
+    t_report.set_upstream(t_if_not_exists_create_tables)
 
     for company in STOCKS:
         upstream_task = t_if_not_exists_create_tables
