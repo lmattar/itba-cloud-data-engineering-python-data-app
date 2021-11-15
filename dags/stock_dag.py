@@ -52,44 +52,49 @@ def get_stock_data(stock_symbol, **context):
     )
     print(f"Getting data from {end_point}...")
 
-    # r = requests.get(end_point)
-    # data = json.loads(r.content)
-    data = {
-        "date": ["07/11/2021"],
-        "symbol": [stock_symbol],
-        "low": [10],
-        "high": ["30"],
-    }
-    df = pd.DataFrame(data)
-    # df = (
-    #     pd.DataFrame(data)
-    #     .T.reset_index()
-    #     .rename(columns={'index': 'date'})
-    # )
-
-    # 4df = df[df['date'] == date]
+    r = requests.get(end_point)
+    data = json.loads(r.content)
+    # data = {
+    #     "date": ["07/11/2021"],
+    #     "symbol": [stock_symbol],
+    #     "low": [10],
+    #     "high": ["30"],
+    # }
+    # df = pd.DataFrame(data)
+    df = (
+        pd.DataFrame(data)
+        .T.reset_index()
+        .rename(columns={'index': 'date'})
+    )
+    print(df)
+    df = df[df['date'] == date]
 
     return df.to_json()
 
 
 def _insert_stock_in_database(**context):
     task_instance = context["ti"]
-
+    df = pd.DataFrame(columns=["date", "symbol", "low", "high"])
     dfs = []
     for ticker in STOCKS:
-
+        print(ticker)
         stock_df = pd.read_json(
             task_instance.xcom_pull(task_ids=f"get_daily_data_{ticker}"),
             orient="index",
         ).T
-        print(stock_df)
-        stock_df = stock_df[["date", "symbol", "low", "high"]]
-        dfs.append(stock_df)
-    df = pd.concat(dfs, axis=0)
+        print("stock Df",stock_df)
+        if not stock_df.empty:
+            stock_df = stock_df[["date", "symbol", "low", "high"]]
+            dfs.append(stock_df)
+            df = pd.concat(dfs, axis=0)
     pc = PostgresClient(DB_NAME, POSTGRES_USER, POSTGRES_PASS, DB_HOST, DB_PORT)
     try:
-        pc.insert_from_frame(df, "stock")
-        print(f"Inserted {len(df)} records")
+        if not df.empty:
+            print("data set df",df)
+            pc.insert_from_frame(df, "stock")
+            print(f"Inserted {len(df)} records")
+        else:
+            print("NO SE INSERTO NADA")
     except sqlalchemy.exc.IntegrityError:
         # You can avoid doing this by setting a trigger rule in the reports operator
         print("Data already exists! Nothing to do...")
