@@ -33,7 +33,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          cd key_generator/source
           pip install -r requirements-dev.txt
           pip install -e .
 
