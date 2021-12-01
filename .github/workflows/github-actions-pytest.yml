@@ -34,10 +34,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
           
       - name: Install library
-        run: poetry install --no-interaction
+        run: |
+              source.venv/bin/activate
+              poetry install --no-interaction
 
       - name: Run tests
-        run: |
-             source /home/runner/.cache/pypoetry/virtualenvs/tp2-daRBDQH9-py3.9/activate
-             python -m pytest
+        run: python -m pytest
           
