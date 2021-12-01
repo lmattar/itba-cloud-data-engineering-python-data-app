@@ -38,6 +38,6 @@ jobs:
 
       - name: Run tests
         run: |
-             source /home/runner/.cache/pypoetry/virtualenvs/activate
+             source /home/runner/.cache/pypoetry/virtualenvs/tp2-daRBDQH9-py3.9/activate
              python -m pytest
           
