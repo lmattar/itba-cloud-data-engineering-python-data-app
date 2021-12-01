@@ -9,3 +9,7 @@ def test_getStockData():
     assert 1==1
     return True
 
+def test_getStockData2():
+    print("Run pytest")
+    assert 1==2
+    return True
