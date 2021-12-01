@@ -38,5 +38,6 @@ jobs:
 
       - name: Run tests
         run: |
-              pytest
+             pwd
+             python -m pytest
           
