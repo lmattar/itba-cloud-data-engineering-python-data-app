@@ -1,6 +1,6 @@
 import pandas as pd
-from  App.dags.postgresClient import PostgresClient
-from  App.dags.stock_dag import get_stock_data
+#from  App.dags.postgresClient import PostgresClient
+#from  App.dags.stock_dag import get_stock_data
 
 
 
